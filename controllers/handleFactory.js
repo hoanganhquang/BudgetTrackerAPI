@@ -1,3 +1,5 @@
+const catchAsync = require("../utils/catchAsync");
+
 exports.getAll = function (Model) {
   return catchAsync(async (req, res, next) => {
     const data = await Model.find();
@@ -11,12 +13,8 @@ exports.getAll = function (Model) {
 };
 
 exports.deleteOne = function (Model) {
-  return catchAsync(async (err, req, res, next) => {
+  return catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndDelete(req.params.id);
-
-    if (!doc) {
-      return next(err);
-    }
 
     res.status(200).json({
       status: "success",
@@ -26,15 +24,11 @@ exports.deleteOne = function (Model) {
 };
 
 exports.updateOne = function (Model) {
-  return catchAsync(async (err, req, res, next) => {
+  return catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
-
-    if (!doc) {
-      return next(err);
-    }
 
     res.status(200).json({
       status: "success",
@@ -55,16 +49,12 @@ exports.createOne = function (Model) {
 };
 
 exports.getOne = function (Model, popOptions) {
-  return catchAsync(async (err, req, res, next) => {
+  return catchAsync(async (req, res, next) => {
     let query = Model.findById(req.params.id);
 
     if (popOptions) query = query.populate(popOptions);
 
     const doc = await query;
-
-    if (!doc) {
-      return next(err);
-    }
 
     res.status(200).json({
       status: "Success",

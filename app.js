@@ -1,20 +1,22 @@
 const express = require("express");
 const path = require("path");
 const logger = require("morgan");
+const bodyParser = require("body-parser");
 const busboyBodyParser = require("busboy-body-parser");
+const cookieParser = require("cookie-parser");
 
-const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
+const categoryRouter = require("./routes/category");
 
 const app = express();
 
 app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(busboyBodyParser());
 app.use(express.static(path.join(__dirname, "public")));
-
-app.use("/api/v1/categories", usersRouter);
+app.use(cookieParser());
+app.use("/api/v1/categories", categoryRouter);
 app.use("/api/v1/users", usersRouter);
 
 app.use((err, req, res, next) => {

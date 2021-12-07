@@ -30,16 +30,16 @@ exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
-
+  console.log(user);
   // check password
   await user.checkPassword(password, user.password);
 
   createSendToken(user, 200, req, res);
 });
 
-exports.protect = catchAsync(async (err, req, res, next) => {
+exports.protect = catchAsync(async (req, res, next) => {
   let token;
-  // check token in header
+  console.log(req.headers);
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")

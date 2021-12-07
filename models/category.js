@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const Category = mongoose.Schema({
+const CategorySchema = mongoose.Schema({
   name: {
     type: String,
     trim: true,
@@ -11,6 +11,6 @@ const Category = mongoose.Schema({
   },
 });
 
-const Category = mongoose.model("categories", User);
+const Category = mongoose.model("categories", CategorySchema);
 
 module.exports = Category;
