@@ -6,6 +6,8 @@ const auth = require("../controllers/auth");
 
 router.use(auth.protect);
 
+router.delete("/all", transaction.deleteAll);
+
 router.delete("/:id", transaction.deleteOne);
 
 router.patch("/:id", transaction.updateOne);

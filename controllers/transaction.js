@@ -1,3 +1,4 @@
+const Budget = require("../models/budget");
 const Transaction = require("../models/transaction");
 const catchAsync = require("../utils/catchAsync");
 
@@ -16,7 +17,10 @@ exports.getAll = catchAsync(async (req, res) => {
 
 exports.createOne = catchAsync(async (req, res, next) => {
   req.body.user = req.user;
-  await Transaction.create(req.body);
+  const trans = await Transaction.create(req.body);
+  const budget = await Budget.findOne(trans.budget);
+  budget.checkAmount(trans.transactionType, trans.amount);
+  await budget.save();
 
   res.status(200).json({
     status: "success",
@@ -47,6 +51,14 @@ exports.deleteOne = catchAsync(async (req, res, next) => {
     _id: req.params.id,
     user: req.user,
   });
+
+  res.status(200).json({
+    status: "success",
+  });
+});
+
+exports.deleteAll = catchAsync(async (req, res, next) => {
+  await Transaction.deleteMany();
 
   res.status(200).json({
     status: "success",

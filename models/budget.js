@@ -11,7 +11,6 @@ const BudgetSchema = mongoose.Schema({
   amount: {
     type: Number,
     trim: true,
-    default: 0,
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -23,6 +22,15 @@ const BudgetSchema = mongoose.Schema({
   },
 });
 
-const Budget = mongoose.model("budgetSchema", BudgetSchema);
+BudgetSchema.methods.checkAmount = function (type, amount) {
+  console.log(this.amount);
+  if (type == "expense") {
+    this.amount = this.amount - amount;
+  } else {
+    this.amount = this.amount + amount;
+  }
+};
+
+const Budget = mongoose.model("budget", BudgetSchema);
 
 module.exports = Budget;

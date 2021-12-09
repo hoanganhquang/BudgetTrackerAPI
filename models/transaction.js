@@ -24,6 +24,20 @@ const TransactionSchema = mongoose.Schema({
   },
 });
 
+TransactionSchema.pre("save", async function (next) {
+  const budget = await this.populate({
+    path: "budget",
+    select: "amount",
+  });
+  if (
+    budget.transactionType == "expense" &&
+    budget.amount > budget.budget.amount
+  ) {
+    return next(new Error("Not enough money in budget"));
+  }
+  next();
+});
+
 const Transaction = mongoose.model("transaction", TransactionSchema);
 
 module.exports = Transaction;
