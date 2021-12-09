@@ -10,8 +10,6 @@ router.delete("/:id", budget.deleteOne);
 
 router.patch("/:id", budget.updateOne);
 
-router.post("/new-budget", budget.createOne);
-
-router.get("/", budget.getAll);
+router.route("/").get(budget.getAll).post(budget.createOne);
 
 module.exports = router;

@@ -2,7 +2,6 @@ const Category = require("../models/category");
 const catchAsync = require("../utils/catchAsync");
 
 exports.getAll = catchAsync(async (req, res) => {
-  console.log(req.user);
   const data = await Category.find({
     user: req.user,
   }).select("-user");
