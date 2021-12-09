@@ -1,9 +1,9 @@
-const Category = require("../models/category");
+const Transaction = require("../models/transaction");
 const catchAsync = require("../utils/catchAsync");
 
 exports.getAll = catchAsync(async (req, res) => {
   console.log(req.user);
-  const data = await Category.find({
+  const data = await Transaction.find({
     user: req.user,
   }).select("-user");
 
@@ -16,7 +16,7 @@ exports.getAll = catchAsync(async (req, res) => {
 
 exports.createOne = catchAsync(async (req, res, next) => {
   req.body.user = req.user;
-  await Category.create(req.body);
+  await Transaction.create(req.body);
 
   res.status(200).json({
     status: "success",
@@ -24,7 +24,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
 });
 
 exports.updateOne = catchAsync(async (req, res, next) => {
-  const data = await Category.findOneAndUpdate(
+  const data = await Transaction.findOneAndUpdate(
     {
       _id: req.params.id,
       user: req.user,
@@ -43,7 +43,7 @@ exports.updateOne = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteOne = catchAsync(async (req, res, next) => {
-  await Category.findOneAndDelete({
+  await Transaction.findOneAndDelete({
     _id: req.params.id,
     user: req.user,
   });

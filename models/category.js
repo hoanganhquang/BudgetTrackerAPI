@@ -7,7 +7,10 @@ const CategorySchema = mongoose.Schema({
     maxlength: 45,
     minlength: 3,
     required: [true, "Require a name"],
-    unique: true,
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "user",
   },
 });
 

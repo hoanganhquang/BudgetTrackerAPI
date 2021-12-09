@@ -1,11 +1,15 @@
-const Category = require("../models/category");
+const Budget = require("../models/budget");
 const catchAsync = require("../utils/catchAsync");
 
 exports.getAll = catchAsync(async (req, res) => {
-  console.log(req.user);
-  const data = await Category.find({
+  const data = await Budget.find({
     user: req.user,
-  }).select("-user");
+  })
+    .populate({
+      path: "category",
+      select: "name",
+    })
+    .select("-user");
 
   res.status(200).json({
     status: "Success",
@@ -16,7 +20,7 @@ exports.getAll = catchAsync(async (req, res) => {
 
 exports.createOne = catchAsync(async (req, res, next) => {
   req.body.user = req.user;
-  await Category.create(req.body);
+  await Budget.create(req.body);
 
   res.status(200).json({
     status: "success",
@@ -24,7 +28,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
 });
 
 exports.updateOne = catchAsync(async (req, res, next) => {
-  const data = await Category.findOneAndUpdate(
+  const data = await Budget.findOneAndUpdate(
     {
       _id: req.params.id,
       user: req.user,
@@ -34,7 +38,12 @@ exports.updateOne = catchAsync(async (req, res, next) => {
       new: true,
       runValidators: true,
     }
-  );
+  )
+    .populate({
+      path: "category",
+      select: "name",
+    })
+    .select("-user");
 
   res.status(200).json({
     status: "success",
@@ -43,7 +52,7 @@ exports.updateOne = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteOne = catchAsync(async (req, res, next) => {
-  await Category.findOneAndDelete({
+  await Budget.findOneAndDelete({
     _id: req.params.id,
     user: req.user,
   });

@@ -26,10 +26,10 @@ exports.signup = catchAsync(async (req, res, next) => {
   createSendToken(newUser, 200, req, res);
 });
 
-exports.login = catchAsync(async (req, res, next) => {
+exports.signin = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).select("+password");
   console.log(user);
   // check password
   await user.checkPassword(password, user.password);
@@ -39,7 +39,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
 exports.protect = catchAsync(async (req, res, next) => {
   let token;
-  console.log(req.headers);
+
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
@@ -50,10 +50,6 @@ exports.protect = catchAsync(async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   const user = await User.findById(decoded.id);
-
-  if (user.checkChangedPassword(decoded.iat)) {
-    return next(err);
-  }
 
   req.user = user;
 

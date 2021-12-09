@@ -21,6 +21,7 @@ const UserSchema = mongoose.Schema({
     required: [true, "Must have password"],
     trim: true,
     minlength: 6,
+    select: false,
   },
   phone: {
     type: String,

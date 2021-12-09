@@ -1,12 +1,9 @@
 const mongoose = require("mongoose");
 
 const TransactionSchema = mongoose.Schema({
-  income: {
-    type: Number,
-    trim: true,
-  },
-  expense: {
-    type: Number,
+  transactionType: {
+    type: String,
+    enum: ["income", "expense"],
     trim: true,
   },
   time: {
@@ -17,13 +14,13 @@ const TransactionSchema = mongoose.Schema({
     type: String,
     trim: true,
   },
+  amount: {
+    type: Number,
+    trim: true,
+  },
   budget: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "budget",
-  },
-  category: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "transactionSchema",
   },
 });
 

@@ -8,6 +8,8 @@ router.use(auth.protect);
 
 router.delete("/:id", category.deleteOne);
 
+router.patch("/:id", category.updateOne);
+
 router.post("/new-category", category.createOne);
 
 router.get("/", category.getAll);
