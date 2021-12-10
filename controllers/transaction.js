@@ -9,7 +9,9 @@ exports.getAll = catchAsync(async (req, res) => {
 
   const data = await Transaction.find({
     budget: budget,
-  });
+  })
+    .populate({ path: "budget", select: "name" })
+    .populate({ path: "category", select: "name" });
 
   res.status(200).json({
     status: "Success",

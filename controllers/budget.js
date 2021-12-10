@@ -4,12 +4,7 @@ const catchAsync = require("../utils/catchAsync");
 exports.getAll = catchAsync(async (req, res) => {
   const data = await Budget.find({
     user: req.user,
-  })
-    .populate({
-      path: "category",
-      select: "name",
-    })
-    .select("-user");
+  }).select("-user");
 
   res.status(200).json({
     status: "Success",
@@ -38,12 +33,7 @@ exports.updateOne = catchAsync(async (req, res, next) => {
       new: true,
       runValidators: true,
     }
-  )
-    .populate({
-      path: "category",
-      select: "name",
-    })
-    .select("-user");
+  ).select("-user");
 
   res.status(200).json({
     status: "success",
