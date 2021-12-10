@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken");
 const catchAsync = require("../utils/catchAsync");
 const User = require("../models/user");
 const { promisify } = require("util");
+const Email = require("../utils/email");
+const crypto = require("crypto");
 
 const signToken = (id) => {
   return jwt.sign({ id: id }, process.env.JWT_SECRET, {
@@ -30,9 +32,10 @@ exports.signin = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email }).select("+password");
-  console.log(user);
-  // check password
-  await user.checkPassword(password, user.password);
+
+  if (!user || !(await user.checkPassword(password, user.password))) {
+    return next(new Error("Invalid information"));
+  }
 
   createSendToken(user, 200, req, res);
 });
@@ -46,12 +49,80 @@ exports.protect = catchAsync(async (req, res, next) => {
   ) {
     token = req.headers.authorization.split(" ")[1];
   }
-
+  if (!token) {
+    return next(new Error("Not logged in"));
+  }
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   const user = await User.findById(decoded.id);
 
+  if (!user) {
+    return next(
+      new Error("The user belonging to this token does no longer exist")
+    );
+  }
+
+  if (user.changedPasswordAfter(decoded.iat)) {
+    return next(
+      new Error("User recently changed password! Please login again")
+    );
+  }
+
   req.user = user;
 
   next();
+});
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+
+  if (!user) {
+    return next(new Error("Not find email"));
+  }
+
+  const resetToken = user.createPasswordResetToken();
+  await user.save({ validateBeforeSave: false });
+
+  try {
+    const resetURL = `${req.protocol}://${req.get(
+      "host"
+    )}/api/v1/users/resetPassword/${resetToken}`;
+
+    await new Email(user, resetURL).sendPasswordReset();
+
+    res.status(200).json({
+      status: "success",
+      message: "token sent to email",
+    });
+  } catch (error) {
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    return next(new Error("There was error sending email"));
+  }
+});
+exports.resetPassword = catchAsync(async (req, res, next) => {
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+
+  const user = await User.findOne({ passwordResetToken: hashedToken });
+
+  if (Date.now() > user.passwordResetExpires) {
+    return next(new Error("Token expired"));
+  }
+  user.password = req.body.password;
+
+  user.passwordChangedAt = Date.now();
+  user.passwordResetExpires = undefined;
+  user.passwordResetToken = undefined;
+
+  await user.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    status: "Success",
+    message: "Changed the password, login again",
+  });
 });

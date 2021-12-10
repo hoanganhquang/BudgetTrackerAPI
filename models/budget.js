@@ -16,10 +16,6 @@ const BudgetSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
   },
-  category: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "categories",
-  },
 });
 
 BudgetSchema.methods.checkAmount = function (type, amount) {

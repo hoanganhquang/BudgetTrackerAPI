@@ -22,6 +22,10 @@ const TransactionSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "budget",
   },
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "categories",
+  },
 });
 
 TransactionSchema.pre("save", async function (next) {
