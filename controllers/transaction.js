@@ -3,10 +3,13 @@ const Transaction = require("../models/transaction");
 const catchAsync = require("../utils/catchAsync");
 
 exports.getAll = catchAsync(async (req, res) => {
-  console.log(req.user);
-  const data = await Transaction.find({
+  const budget = await Budget.findOne({
     user: req.user,
-  }).select("-user");
+  });
+
+  const data = await Transaction.find({
+    budget: budget,
+  });
 
   res.status(200).json({
     status: "Success",
