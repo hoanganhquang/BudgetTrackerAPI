@@ -1,9 +1,9 @@
 const nodemailer = require("nodemailer");
 const path = require("path");
 class Email {
-  constructor(user, url) {
+  constructor(user, token) {
     this.to = user.email;
-    this.url = url;
+    this.token = token;
     this.from = `from admin`;
   }
 
@@ -25,7 +25,7 @@ class Email {
       from: this.from,
       to: this.to,
       subject,
-      html: `<p style="color: blue">${this.url}</p>`,
+      html: `<p style="color: blue">Your token: ${this.token}</p>`,
     };
 
     await this.newTransport().sendMail(mailOptions);

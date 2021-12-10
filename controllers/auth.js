@@ -84,11 +84,9 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   try {
-    const resetURL = `${req.protocol}://${req.get(
-      "host"
-    )}/api/v1/users/resetPassword/${resetToken}`;
+    const token = resetToken;
 
-    await new Email(user, resetURL).sendPasswordReset();
+    await new Email(user, token).sendPasswordReset();
 
     res.status(200).json({
       status: "success",
@@ -105,7 +103,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 exports.resetPassword = catchAsync(async (req, res, next) => {
   const hashedToken = crypto
     .createHash("sha256")
-    .update(req.params.token)
+    .update(req.body.token)
     .digest("hex");
 
   const user = await User.findOne({ passwordResetToken: hashedToken });
