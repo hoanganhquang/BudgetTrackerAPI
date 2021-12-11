@@ -1,3 +1,4 @@
+const req = require("express/lib/request");
 const mongoose = require("mongoose");
 
 const TransactionSchema = mongoose.Schema({
@@ -8,7 +9,6 @@ const TransactionSchema = mongoose.Schema({
   },
   time: {
     type: Date,
-    default: Date.now(),
   },
   notes: {
     type: String,
@@ -41,6 +41,10 @@ TransactionSchema.pre("save", async function (next) {
   }
   next();
 });
+
+// TransactionSchema.pre("aggregate", function (next) {
+
+// });
 
 const Transaction = mongoose.model("transaction", TransactionSchema);
 

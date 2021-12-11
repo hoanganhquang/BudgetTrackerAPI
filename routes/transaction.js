@@ -8,10 +8,12 @@ router.use(auth.protect);
 
 router.delete("/all", transaction.deleteAll);
 
+router.get("/statistics", transaction.statistics);
+
 router.delete("/:id", transaction.deleteOne);
 
 router.patch("/:id", transaction.updateOne);
 
-router.route("/").get(transaction.getAll).post(transaction.createOne);
+router.route("/:id").get(transaction.getAll).post(transaction.createOne);
 
 module.exports = router;

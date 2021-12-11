@@ -5,6 +5,7 @@ const catchAsync = require("../utils/catchAsync");
 exports.getAll = catchAsync(async (req, res) => {
   const budget = await Budget.findOne({
     user: req.user,
+    _id: req.params.id,
   });
 
   const data = await Transaction.find({
@@ -22,8 +23,11 @@ exports.getAll = catchAsync(async (req, res) => {
 
 exports.createOne = catchAsync(async (req, res, next) => {
   req.body.user = req.user;
+
   const trans = await Transaction.create(req.body);
+
   const budget = await Budget.findOne(trans.budget);
+
   budget.checkAmount(trans.transactionType, trans.amount);
   await budget.save();
 
@@ -59,6 +63,39 @@ exports.deleteOne = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
+  });
+});
+
+exports.statistics = catchAsync(async (req, res) => {
+  const statistics = await Budget.aggregate([
+    {
+      $match: {
+        user: req.user._id,
+      },
+    },
+    {
+      $lookup: {
+        from: "transactions",
+        localField: "_id",
+        foreignField: "budget",
+        as: "transactions",
+      },
+    },
+    // {
+    //   $addFiels: {
+    //     user: req.user._id,
+    //   },
+    // },
+    // {
+    //   $group: {
+    //     _id: "$transactionType",
+    //     total: { $sum: "$amount" },
+    //   },
+    // },
+  ]);
+  res.status(200).json({
+    status: "success",
+    data: statistics,
   });
 });
 
