@@ -33,7 +33,7 @@ exports.updateOne = catchAsync(async (req, res, next) => {
       new: true,
       runValidators: true,
     }
-  );
+  ).select("-user");
 
   res.status(200).json({
     status: "success",
