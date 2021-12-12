@@ -67,6 +67,8 @@ exports.deleteOne = catchAsync(async (req, res, next) => {
 });
 
 exports.statistics = catchAsync(async (req, res) => {
+  const date = req.query.date;
+
   const statistics = await Budget.aggregate([
     {
       $match: {
@@ -81,17 +83,35 @@ exports.statistics = catchAsync(async (req, res) => {
         as: "transactions",
       },
     },
-    // {
-    //   $addFiels: {
-    //     user: req.user._id,
-    //   },
-    // },
-    // {
-    //   $group: {
-    //     _id: "$transactionType",
-    //     total: { $sum: "$amount" },
-    //   },
-    // },
+    {
+      $project: {
+        _id: 0,
+        transactions: 1,
+      },
+    },
+    {
+      $unwind: "$transactions",
+    },
+    {
+      $addFields: {
+        "transactions.year": { $year: "$transactions.time" },
+        "transactions.month": { $month: "$transactions.time" },
+      },
+    },
+    {
+      $match: {
+        "transactions.month": new Date(date).getMonth() + 1,
+        "transactions.year": new Date(date).getFullYear(),
+      },
+    },
+    { $replaceRoot: { newRoot: "$transactions" } },
+    {
+      $group: {
+        _id: "$transactionType",
+        total: { $sum: "$amount" },
+        transList: { $push: "$$ROOT" },
+      },
+    },
   ]);
   res.status(200).json({
     status: "success",
