@@ -14,6 +14,6 @@ router.delete("/:id", transaction.deleteOne);
 
 router.patch("/:id", transaction.updateOne);
 
-router.route("/:id").get(transaction.getAll).post(transaction.createOne);
+router.route("/").get(transaction.getAll).post(transaction.createOne);
 
 module.exports = router;

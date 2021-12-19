@@ -3,16 +3,32 @@ const Transaction = require("../models/transaction");
 const catchAsync = require("../utils/catchAsync");
 
 exports.getAll = catchAsync(async (req, res) => {
-  const budget = await Budget.findOne({
-    user: req.user,
-    _id: req.params.id,
-  });
+  const data = await Budget.aggregate([
+    {
+      $match: {
+        user: req.user._id,
+      },
+    },
+    {
+      $lookup: {
+        from: "transactions",
+        localField: "_id",
+        foreignField: "budget",
+        as: "transactions",
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        transactions: 1,
+      },
+    },
+    {
+      $unwind: "$transactions",
+    },
 
-  const data = await Transaction.find({
-    budget: budget,
-  })
-    .populate({ path: "budget", select: "name" })
-    .populate({ path: "category", select: "name" });
+    { $replaceRoot: { newRoot: "$transactions" } },
+  ]);
 
   res.status(200).json({
     status: "Success",
