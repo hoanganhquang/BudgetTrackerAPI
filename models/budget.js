@@ -12,6 +12,10 @@ const BudgetSchema = mongoose.Schema({
     type: Number,
     trim: true,
   },
+  initialAmount: {
+    type: Number,
+    trim: true,
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",

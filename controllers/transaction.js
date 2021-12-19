@@ -129,6 +129,7 @@ exports.statistics = catchAsync(async (req, res) => {
       },
     },
   ]);
+  console.log(statistics);
   res.status(200).json({
     status: "success",
     data: statistics,
