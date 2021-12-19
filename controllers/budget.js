@@ -13,6 +13,16 @@ exports.getAll = catchAsync(async (req, res) => {
   });
 });
 
+exports.getOne = catchAsync(async (req, res) => {
+  const data = await Budget.findById(req.params.id);
+
+  res.status(200).json({
+    status: "Success",
+    length: data.length,
+    data,
+  });
+});
+
 exports.createOne = catchAsync(async (req, res, next) => {
   req.body.user = req.user;
   await Budget.create(req.body);
