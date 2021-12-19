@@ -12,7 +12,7 @@ const signToken = (id) => {
 };
 
 const createSendToken = (user, statusCode, req, res) => {
-  const token = signToken(user._id);
+  const token = user._id;
 
   user.password = undefined;
 
@@ -43,30 +43,29 @@ exports.signin = catchAsync(async (req, res, next) => {
 exports.protect = catchAsync(async (req, res, next) => {
   let token;
 
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    token = req.headers.authorization.split(" ")[1];
-  }
-  if (!token) {
-    return next(new Error("Not logged in"));
-  }
-  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  // if (
+  //   req.headers.authorization &&
+  //   req.headers.authorization.startsWith("Bearer")
+  // ) {
+  token = req.headers.authorization.split(" ")[1];
+  // }
+  // if (!token) {
+  //   return next(new Error("Not logged in"));
+  // }
 
-  const user = await User.findById(decoded.id);
+  const user = await User.findById(token);
 
-  if (!user) {
-    return next(
-      new Error("The user belonging to this token does no longer exist")
-    );
-  }
+  // if (!user) {
+  //   return next(
+  //     new Error("The user belonging to this token does no longer exist")
+  //   );
+  // }
 
-  if (user.checkChangedPassword(decoded.iat)) {
-    return next(
-      new Error("User recently changed password! Please login again")
-    );
-  }
+  // if (user.checkChangedPassword(decoded.iat)) {
+  //   return next(
+  //     new Error("User recently changed password! Please login again")
+  //   );
+  // }
 
   req.user = user;
 
