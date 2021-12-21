@@ -19,11 +19,18 @@ const BudgetSchema = mongoose.Schema({
 });
 
 BudgetSchema.methods.checkAmount = function (type, amount) {
-  console.log(this.amount);
   if (type == "expense") {
     this.amount = this.amount - amount;
   } else {
     this.amount = this.amount + amount;
+  }
+};
+
+BudgetSchema.methods.updateAmount = function (type, amount, oldAmount) {
+  if (type == "expense") {
+    this.amount = this.amount + oldAmount - amount;
+  } else {
+    this.amount = this.amount - oldAmount + amount;
   }
 };
 

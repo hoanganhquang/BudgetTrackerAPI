@@ -60,10 +60,16 @@ exports.updateOne = catchAsync(async (req, res, next) => {
     },
     req.body,
     {
-      new: true,
       runValidators: true,
     }
   );
+
+  if (req.body.amount) {
+    const budget = await Budget.findOne(data.budget);
+    console.log(budget);
+    budget.updateAmount(data.transactionType, req.body.amount, data.amount);
+    await budget.save({ validateBeforeSave: false });
+  }
 
   res.status(200).json({
     status: "success",
