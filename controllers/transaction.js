@@ -65,9 +65,21 @@ exports.updateOne = catchAsync(async (req, res, next) => {
   );
 
   if (req.body.amount) {
-    const budget = await Budget.findOne(data.budget);
+    let transactionType;
+    const budget = await Budget.findById(data.budget);
+
+    if (req.body.transactionType) {
+      transactionType = req.body.transactionType;
+    } else {
+      transactionType = data.transactionType;
+    }
+
     console.log(budget);
-    budget.updateAmount(data.transactionType, req.body.amount, data.amount);
+    budget.updateAmount(
+      transactionType,
+      Number(req.body.amount),
+      Number(data.amount)
+    );
     await budget.save({ validateBeforeSave: false });
   }
 
